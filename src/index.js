@@ -7,6 +7,7 @@ import { APPLE_TOUCH_PNG, FAVICON_ICO } from './icons.js';
 import { OG_PNG } from './og.js';
 import { ICON, donePage, page, resultPage } from './page.js';
 import { PrError, createReadmePr } from './pr.js';
+import { withSecurityHeaders } from './security-headers.js';
 
 // Search engines: crawl the page, skip the endpoints that render or sign in, and find the sitemap.
 export const ROBOTS = 'User-agent: *\nAllow: /\nDisallow: /render\nDisallow: /auth/\nDisallow: /check\n\nSitemap: https://diagram.flisk.si/sitemap.xml\n';
@@ -17,7 +18,7 @@ const SVG = { 'content-type': 'image/svg+xml; charset=utf-8', 'cache-control': '
 // Bump when the renderer changes: it is part of the edge-cache key, so old diagrams are not served for a day.
 export const RENDER_VERSION = '12';
 
-export default {
+const app = {
   async fetch(request, env = {}, ctx) {
     const url = new URL(request.url);
     const origin = env.PUBLIC_ORIGIN || url.origin;
@@ -101,5 +102,11 @@ export default {
       return res;
     }
     return new Response('not found', { status: 404 });
+  },
+};
+
+export default {
+  async fetch(request, env = {}, ctx) {
+    return withSecurityHeaders(await app.fetch(request, env, ctx));
   },
 };
