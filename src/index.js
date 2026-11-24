@@ -91,7 +91,7 @@ const app = {
       if (md.length > 400_000) return new Response('README too large', { status: 413 });
       return new Response(renderSvg(buildModel(md)), { headers: { ...SVG, 'cache-control': 'no-store' } });
     }
-    const pm = url.pathname.match(/^\/([^/]+)\/([^/.][^/]*)$/);
+    const pm = url.pathname.match(/^\/([^/]+)\/([^/]+)$/);
     if (pm && request.method === 'GET' && !/\.(svg|json)$/.test(pm[2])) {
       if (!validRepo(pm[1], pm[2])) return new Response('bad repo', { status: 400 });
       const edit = await readmeEditUrl(pm[1], pm[2], { token: env.GITHUB_TOKEN });
